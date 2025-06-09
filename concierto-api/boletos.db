@@ -1,0 +1,29 @@
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('boletos.db');
+
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS boletos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    localidad TEXT NOT NULL,
+    fecha TEXT NOT NULL,
+    precio REAL NOT NULL,
+    descuento REAL NOT NULL
+  )`);
+
+  const datos = [
+    ['A', 'Viernes', 150, 0.15],
+    ['A', 'Sábado', 230, 0.07],
+    ['B', 'Viernes', 300, 0.08],
+    ['B', 'Sábado', 425, 0.04],
+    ['C', 'Viernes', 500, 0.10],
+    ['C', 'Sábado', 670, 0.07]
+  ];
+
+  const stmt = db.prepare('INSERT INTO boletos (localidad, fecha, precio, descuento) VALUES (?, ?, ?, ?)');
+  datos.forEach(d => stmt.run(d));
+  stmt.finalize();
+
+  console.log("✅ Base de datos creada y poblada correctamente.");
+});
+
+db.close();
